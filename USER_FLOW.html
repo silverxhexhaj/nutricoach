@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriCoach – User Flow</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --surface: #17171f;
+      --surface2: #1e1e29;
+      --border: #2a2a3a;
+      --accent: #6c63ff;
+      --accent2: #22d3ee;
+      --accent3: #f472b6;
+      --text: #e8e8f0;
+      --muted: #8888aa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ───────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px 40px;
+      text-align: center;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: rgba(108, 99, 255, 0.15);
+      border: 1px solid rgba(108, 99, 255, 0.4);
+      color: #a899ff;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #fff 0%, #a899ff 60%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ── TOC ──────────────────────────────────────── */
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 28px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .toc a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 13px;
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .toc a:hover {
+      border-color: var(--accent);
+      color: #a899ff;
+    }
+
+    .toc a .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── MAIN ─────────────────────────────────────── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── SECTION ──────────────────────────────────── */
+    .section {
+      margin-top: 64px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .section-header p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── FLOW CARDS ───────────────────────────────── */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .flow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .flow-card:hover {
+      border-color: rgba(108, 99, 255, 0.4);
+    }
+
+    .flow-card-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .flow-card-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .flow-card-header .card-icon {
+      font-size: 18px;
+    }
+
+    .flow-card-body {
+      padding: 20px;
+    }
+
+    /* ── STEP LIST ────────────────────────────────── */
+    .step-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 14px;
+      position: relative;
+    }
+
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      bottom: -4px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-content {
+      padding: 4px 0 20px;
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .step-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .step-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .step-tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--surface2);
+    }
+
+    /* ── DECISION ─────────────────────────────────── */
+    .decision-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 8px 0 16px;
+    }
+
+    .decision-block .decision-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .decision-options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .decision-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .decision-option .arrow {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* ── FULL FLOW ────────────────────────────────── */
+    .full-flow {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .full-flow-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .full-flow-body {
+      padding: 24px;
+      overflow-x: auto;
+    }
+
+    /* ── MERMAID OVERRIDES ────────────────────────── */
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    .mermaid svg {
+      max-width: 100%;
+    }
+
+    /* ── ROLE LEGEND ──────────────────────────────── */
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 12px; height: 12px;
+      border-radius: 3px;
+    }
+
+    /* ── ROUTE TABLE ──────────────────────────────── */
+    .route-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .route-table th {
+      text-align: left;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 2px solid var(--border);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .route-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .route-table tr:last-child td { border-bottom: none; }
+
+    .route-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .route-badge {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      color: var(--accent2);
+    }
+
+    .role-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+
+    /* ── COLORS ───────────────────────────────────── */
+    .c-purple { background: rgba(108,99,255,0.15); color: #a899ff; }
+    .c-cyan   { background: rgba(34,211,238,0.15); color: #22d3ee; }
+    .c-pink   { background: rgba(244,114,182,0.15); color: #f472b6; }
+    .c-green  { background: rgba(74,222,128,0.15); color: #4ade80; }
+    .c-orange { background: rgba(251,146,60,0.15); color: #fb923c; }
+
+    .bg-purple { background: rgba(108,99,255,0.2); }
+    .bg-cyan   { background: rgba(34,211,238,0.2); }
+    .bg-pink   { background: rgba(244,114,182,0.2); }
+    .bg-green  { background: rgba(74,222,128,0.2); }
+    .bg-orange { background: rgba(251,146,60,0.2); }
+
+    .border-purple { border-left: 3px solid #6c63ff; }
+    .border-cyan   { border-left: 3px solid #22d3ee; }
+    .border-pink   { border-left: 3px solid #f472b6; }
+
+    /* ── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 640px) {
+      .flow-grid { grid-template-columns: 1fr; }
+      .legend { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ HEADER -->
+<header>
+  <div class="badge">Platform Documentation</div>
+  <h1>NutriCoach User Flow</h1>
+  <p>Complete end-to-end flow for every role and feature across the platform.</p>
+</header>
+
+<!-- ══════════════════════════════════════════════ TOC -->
+<nav class="toc">
+  <a href="#overview"><span class="dot" style="background:#6c63ff"></span> Overview</a>
+  <a href="#public"><span class="dot" style="background:#fb923c"></span> Public &amp; Onboarding</a>
+  <a href="#auth"><span class="dot" style="background:#f472b6"></span> Authentication</a>
+  <a href="#coach"><span class="dot" style="background:#22d3ee"></span> Coach Flow</a>
+  <a href="#client"><span class="dot" style="background:#4ade80"></span> Client Flow</a>
+  <a href="#invite"><span class="dot" style="background:#a899ff"></span> Invite Flow</a>
+  <a href="#routes"><span class="dot" style="background:#fb923c"></span> All Routes</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════ MAIN -->
+<main>
+
+  <!-- ── OVERVIEW ─────────────────────────────────── -->
+  <section class="section" id="overview">
+    <div class="section-header">
+      <div class="section-icon bg-purple" style="border:1px solid rgba(108,99,255,0.3)">🗺️</div>
+      <div>
+        <h2>Platform Overview</h2>
+        <p>Two roles, one platform — coaches create, clients consume.</p>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#6c63ff"></div> Shared / Public</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22d3ee"></div> Coach</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div> Client</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div> Auth</div>
+    </div>
+
+    <div class="full-flow">
+      <div class="full-flow-header">
+        <span style="font-size:20px">🔄</span>
+        <div>
+          <h3 style="font-size:15px;font-weight:600">Master Flow Diagram</h3>
+          <p style="font-size:12px;color:var(--muted)">High-level platform flow from entry to core features</p>
+        </div>
+      </div>
+      <div class="full-flow-body">
+        <div class="mermaid">
+flowchart TD
+    A([🌐 Landing Page]) --> B{New User?}
+    B -->|Yes| C[Onboarding Form\n3-step interest capture]
+    B -->|Returning| D[Login Page]
+    C --> E[Signup Page]
+    E --> F{Account Type}
+    D --> F
+    F -->|Coach| G[Coach Onboarding\nBrand setup]
+    F -->|Client via invite| H[Accept Invite\n/invite/accept]
+    G --> I([🏋️ Coach Dashboard])
+    H --> J([💪 Client Dashboard])
+    F -->|Self-serve client| J
+
+    I --> K[Clients]
+    I --> L[Programs]
+    I --> M[Library]
+    I --> N[Calendar]
+    I --> O[Profile]
+
+    J --> P[My Plan]
+    J --> Q[Check-in]
+    J --> R[Activities]
+    J --> S[Progress]
+    J --> T[My Program]
+    J --> U[Profile]
+
+    K -->|Send invite| H
+
+    style A fill:#1e1e29,stroke:#6c63ff,color:#e8e8f0
+    style I fill:#1a2a3a,stroke:#22d3ee,color:#e8e8f0
+    style J fill:#1a2e1a,stroke:#4ade80,color:#e8e8f0
+    style F fill:#2a1a2a,stroke:#f472b6,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PUBLIC ───────────────────────────────────── -->
+  <section class="section" id="public">
+    <div class="section-header">
+      <div class="section-icon bg-orange" style="border:1px solid rgba(251,146,60,0.3)">🌐</div>
+      <div>
+        <h2>Public &amp; Onboarding Flow</h2>
+        <p>From first visit to account creation — the acquisition funnel.</p>
+      </div>
+    </div>
+
+    <div class="flow-grid">
+      <div class="flow-card border-purple" style="grid-column: 1 / -1">
+        <div class="flow-card-header">
+          <span class="card-icon">🏠</span>
+          <h3>Landing Page → Onboarding Form</h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-orange">1</div>
+              <div class="step-content">
+                <div class="step-title">Landing Page <code style="font-size:11px;color:var(--muted)">/</code></div>
+                <div class="step-desc">Hero section, feature highlights, pricing tiers, and testimonials. CTA buttons drive to the onboarding form below the fold.</div>
+                <div class="step-tags">
+                  <span class="step-tag">Hero Section</span>
+                  <span class="step-tag">Features</span>
+                  <span class="step-tag">Pricing</span>
+                  <span class="step-tag">Onboarding CTA</span>
+                </div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-orange">2</div>
+              <div class="step-content">
+                <div class="step-title">Onboarding Form — Step 1: Personal Info</div>
+                <div class="step-desc">Name, email, age, gender, height, weight. Step progress indicator at the top.</div>
+                <div class="step-tags">
+                  <span class="step-tag">Name</span>
+                  <span class="step-tag">Email</span>
+                  <span class="step-tag">Age</span>
+                  <span class="step-tag">Gender</span>
+                  <span class="step-tag">Height / Weight</span>
+                </div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-orange">3</div>
+              <div class="step-content">
+                <div class="step-title">Onboarding Form — Step 2: Goals &amp; Diet</div>
+                <div class="step-desc">Primary health goal (lose weight / build muscle / maintain / improve health), dietary restrictions (chips: vegan, keto, gluten-free, etc.), and food preferences.</div>
+                <div class="step-tags">
+                  <span class="step-tag">Goals</span>
+                  <span class="step-tag">Dietary Restrictions</span>
+                  <span class="step-tag">Preferences</span>
+                </div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-orange">4</div>
+              <div class="step-content">
+                <div class="step-title">Onboarding Form — Step 3: Lifestyle</div>
+                <div class="step-desc">Activity level, fitness experience, cooking skills, budget for food. Final submission sends data to backend before redirecting to signup.</div>
+                <div class="step-tags">
+                  <span class="step-tag">Activity Level</span>
+                  <span class="step-tag">Experience</span>
+                  <span class="step-tag">Cooking Skill</span>
+                  <span class="step-tag">Budget</span>
+                </div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-orange">5</div>
+              <div class="step-content">
+                <div class="step-title">Redirect to Signup</div>
+                <div class="step-desc">Onboarding data is stored in local context and attached to the new account on creation.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AUTH ────────────────────────────────────── -->
+  <section class="section" id="auth">
+    <div class="section-header">
+      <div class="section-icon bg-pink" style="border:1px solid rgba(244,114,182,0.3)">🔐</div>
+      <div>
+        <h2>Authentication Flow</h2>
+        <p>Signup and login with role-based redirection.</p>
+      </div>
+    </div>
+
+    <div class="flow-grid">
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">✍️</span>
+          <h3>Signup <code style="font-size:11px;color:var(--muted)">/signup</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-pink">1</div>
+              <div class="step-content">
+                <div class="step-title">Enter Credentials</div>
+                <div class="step-desc">Email + password. Supabase Auth creates the account.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-pink">2</div>
+              <div class="step-content">
+                <div class="step-title">Profile Initialized</div>
+                <div class="step-desc">A <code>profiles</code> row is created. If onboarding data exists, it is persisted.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-pink">3</div>
+              <div class="step-content">
+                <div class="step-title">Role Detection &amp; Redirect</div>
+                <div class="step-desc">Is user a coach? → <code>/coach/onboarding</code>. Is user a client via invite? → <code>/app</code>. New self-serve client? → <code>/app</code>.</div>
+                <div class="decision-block" style="margin-top:10px">
+                  <div class="decision-title">Branch</div>
+                  <div class="decision-options">
+                    <div class="decision-option"><span class="arrow">→</span> Coach signup <strong>/coach/onboarding</strong></div>
+                    <div class="decision-option"><span class="arrow">→</span> Client (invite) <strong>/app</strong></div>
+                    <div class="decision-option"><span class="arrow">→</span> Client (self) <strong>/app</strong></div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">🔑</span>
+          <h3>Login <code style="font-size:11px;color:var(--muted)">/login</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-pink">1</div>
+              <div class="step-content">
+                <div class="step-title">Enter Credentials</div>
+                <div class="step-desc">Email + password. Supabase Auth validates.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-pink">2</div>
+              <div class="step-content">
+                <div class="step-title">Session Created</div>
+                <div class="step-desc">JWT stored. User role is read from the database.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-pink">3</div>
+              <div class="step-content">
+                <div class="step-title">Role-Based Redirect</div>
+                <div class="step-desc">Coaches → <code>/coach/dashboard</code>. Clients → <code>/app</code>. Cross-role access is blocked.</div>
+                <div class="decision-block" style="margin-top:10px">
+                  <div class="decision-title">Redirect</div>
+                  <div class="decision-options">
+                    <div class="decision-option"><span class="arrow">→</span> Coach role <strong>/coach/dashboard</strong></div>
+                    <div class="decision-option"><span class="arrow">→</span> Client role <strong>/app</strong></div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COACH FLOW ───────────────────────────────── -->
+  <section class="section" id="coach">
+    <div class="section-header">
+      <div class="section-icon bg-cyan" style="border:1px solid rgba(34,211,238,0.3)">🏋️</div>
+      <div>
+        <h2>Coach Flow</h2>
+        <p>Everything a coach can do — from setup to client management.</p>
+      </div>
+    </div>
+
+    <!-- Coach Onboarding -->
+    <div class="flow-card" style="margin-bottom:20px">
+      <div class="flow-card-header">
+        <span class="card-icon">🚀</span>
+        <h3>Coach Onboarding <code style="font-size:11px;color:var(--muted)">/coach/onboarding</code></h3>
+        <span class="role-pill c-cyan" style="margin-left:auto">First-Time Only</span>
+      </div>
+      <div class="flow-card-body">
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num c-cyan">1</div>
+            <div class="step-content">
+              <div class="step-title">Brand Setup</div>
+              <div class="step-desc">Coach enters their name, brand name, and optionally uploads a logo. This branding appears on the client-facing header.</div>
+              <div class="step-tags"><span class="step-tag">Name</span><span class="step-tag">Brand Name</span><span class="step-tag">Logo Upload</span></div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num c-cyan">2</div>
+            <div class="step-content">
+              <div class="step-title">Subscription Tier</div>
+              <div class="step-desc">Plan selected (determines client limit). Stored in <code>coaches.subscription_tier</code>.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num c-cyan">3</div>
+            <div class="step-content">
+              <div class="step-title">Redirect to Dashboard</div>
+              <div class="step-desc">Onboarding complete flag set. Redirected to <code>/coach/dashboard</code>.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow-grid">
+      <!-- Dashboard -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">📊</span>
+          <h3>Dashboard <code style="font-size:11px;color:var(--muted)">/coach/dashboard</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-cyan">1</div>
+              <div class="step-content">
+                <div class="step-title">Overview Cards</div>
+                <div class="step-desc">Active clients count, recent check-ins summary, active meal plans count.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">2</div>
+              <div class="step-content">
+                <div class="step-title">Quick Actions</div>
+                <div class="step-desc">Jump to Clients, Programs, Library, or Calendar from the dashboard.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Clients -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">👥</span>
+          <h3>Clients <code style="font-size:11px;color:var(--muted)">/coach/clients</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-cyan">1</div>
+              <div class="step-content">
+                <div class="step-title">Client List</div>
+                <div class="step-desc">All active clients with status, last check-in date, and current plan indicator.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">2</div>
+              <div class="step-content">
+                <div class="step-title">Invite New Client</div>
+                <div class="step-desc">Coach enters client email → invite token generated → email sent. Client follows invite link to join.</div>
+                <div class="step-tags"><span class="step-tag">Email Invite</span><span class="step-tag">Token Generated</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">3</div>
+              <div class="step-content">
+                <div class="step-title">Client Detail <code style="font-size:11px;color:var(--muted)">/coach/clients/[id]</code></div>
+                <div class="step-desc">View client profile, all check-ins history, current meal plan, assigned programs, and supplement schedule.</div>
+                <div class="step-tags"><span class="step-tag">Check-ins</span><span class="step-tag">Meal Plan</span><span class="step-tag">Programs</span><span class="step-tag">Supplements</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">4</div>
+              <div class="step-content">
+                <div class="step-title">Assign Program</div>
+                <div class="step-desc">From client detail, select a program from the library and set a start date. Creates a <code>client_programs</code> record.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Programs -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">📋</span>
+          <h3>Programs <code style="font-size:11px;color:var(--muted)">/coach/programs</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-cyan">1</div>
+              <div class="step-content">
+                <div class="step-title">Program List</div>
+                <div class="step-desc">All coach programs with filter by difficulty, tags, and duration. Cards show days per week and duration in weeks.</div>
+                <div class="step-tags"><span class="step-tag">Filter</span><span class="step-tag">Tags</span><span class="step-tag">Difficulty</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">2</div>
+              <div class="step-content">
+                <div class="step-title">Create Program <code style="font-size:11px;color:var(--muted)">/coach/programs/new</code></div>
+                <div class="step-desc">Name, description, difficulty, duration (weeks), days per week, tags, color. Creates the program shell.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">3</div>
+              <div class="step-content">
+                <div class="step-title">Edit Program <code style="font-size:11px;color:var(--muted)">/coach/programs/[id]</code></div>
+                <div class="step-desc">Week/Day editor view. Add program days, label them, and fill each day with content items.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">4</div>
+              <div class="step-content">
+                <div class="step-title">Add Content Items</div>
+                <div class="step-desc">Per day, add items of type: workout, exercise, meal, video, or text. Items can be pulled from the library or created inline.</div>
+                <div class="step-tags"><span class="step-tag">Workout</span><span class="step-tag">Exercise</span><span class="step-tag">Meal</span><span class="step-tag">Video</span><span class="step-tag">Text</span></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Library -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">📚</span>
+          <h3>Library <code style="font-size:11px;color:var(--muted)">/coach/library</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-cyan">1</div>
+              <div class="step-content">
+                <div class="step-title">Browse Library Items</div>
+                <div class="step-desc">Reusable content items filterable by type: workouts, exercises, meals, videos, text snippets.</div>
+                <div class="step-tags"><span class="step-tag">Filter by Type</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">2</div>
+              <div class="step-content">
+                <div class="step-title">Create Library Item</div>
+                <div class="step-desc">Add new reusable item with title, type, and content (JSON). Immediately available for program building.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">3</div>
+              <div class="step-content">
+                <div class="step-title">Edit / Delete Items</div>
+                <div class="step-desc">Inline modal to update content or remove stale items.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">📅</span>
+          <h3>Calendar <code style="font-size:11px;color:var(--muted)">/coach/calendar</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-cyan">1</div>
+              <div class="step-content">
+                <div class="step-title">Check-in Calendar View</div>
+                <div class="step-desc">Monthly calendar showing which clients checked in on which days. Color-coded by client or status.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">2</div>
+              <div class="step-content">
+                <div class="step-title">Drill Into Check-in</div>
+                <div class="step-desc">Click any date entry to see that check-in's details — weight, macros, energy, notes.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Coach Profile -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">⚙️</span>
+          <h3>Coach Profile <code style="font-size:11px;color:var(--muted)">/coach/profile</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-cyan">1</div>
+              <div class="step-content">
+                <div class="step-title">Update Brand Info</div>
+                <div class="step-desc">Change brand name, logo, and personal details shown to clients.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">2</div>
+              <div class="step-content">
+                <div class="step-title">Subscription Management</div>
+                <div class="step-desc">View current tier and client limit. Upgrade prompts if limit reached.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-cyan">3</div>
+              <div class="step-content">
+                <div class="step-title">Sign Out</div>
+                <div class="step-desc">Clears session, returns to <code>/login</code>.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coach diagram -->
+    <div class="full-flow" style="margin-top:24px">
+      <div class="full-flow-header">
+        <span style="font-size:20px">🏋️</span>
+        <div>
+          <h3 style="font-size:15px;font-weight:600">Coach Flow Diagram</h3>
+          <p style="font-size:12px;color:var(--muted)">Detailed coach journey and feature paths</p>
+        </div>
+      </div>
+      <div class="full-flow-body">
+        <div class="mermaid">
+flowchart LR
+    Login([Login]) --> OB[Coach Onboarding\n/coach/onboarding]
+    OB --> DB([Dashboard\n/coach/dashboard])
+    DB --> CL[Clients\n/coach/clients]
+    DB --> PR[Programs\n/coach/programs]
+    DB --> LIB[Library\n/coach/library]
+    DB --> CAL[Calendar\n/coach/calendar]
+    DB --> PRF[Profile\n/coach/profile]
+
+    CL --> INV[Send Invite\nby email]
+    CL --> CDT[Client Detail\n/coach/clients/id]
+    CDT --> ASN[Assign Program\nwith start date]
+
+    PR --> NEW[New Program\n/coach/programs/new]
+    PR --> EDT[Edit Program\n/coach/programs/id]
+    EDT --> DAYS[Add Days\n& Labels]
+    DAYS --> ITEMS[Add Items\nWorkout · Meal · Video · Text]
+    ITEMS --> LPICK[Pick from Library]
+
+    LIB --> LADD[Create Item]
+    LIB --> LEDT[Edit / Delete]
+
+    CAL --> DRILL[View Check-in\nDetails]
+
+    style DB fill:#1a2a3a,stroke:#22d3ee,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CLIENT FLOW ──────────────────────────────── -->
+  <section class="section" id="client">
+    <div class="section-header">
+      <div class="section-icon bg-green" style="border:1px solid rgba(74,222,128,0.3)">💪</div>
+      <div>
+        <h2>Client Flow</h2>
+        <p>Everything a client experiences — from dashboard to daily habits.</p>
+      </div>
+    </div>
+
+    <div class="flow-grid">
+      <!-- Dashboard -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">🏠</span>
+          <h3>Dashboard <code style="font-size:11px;color:var(--muted)">/app</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Welcome &amp; Coach Branding</div>
+                <div class="step-desc">Header shows coach's logo and brand name. Personalized greeting with today's date.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Quick Stats</div>
+                <div class="step-desc">Today's calorie target, water goal, check-in streak, and recent weight trend.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">3</div>
+              <div class="step-content">
+                <div class="step-title">Navigation to Features</div>
+                <div class="step-desc">Sidebar links to Plan, Program, Activities, Progress, Check-in, and Profile.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- My Plan -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">🥗</span>
+          <h3>My Plan <code style="font-size:11px;color:var(--muted)">/app/plan</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Tabbed Plan View</div>
+                <div class="step-desc">Switch between tabs: Today's Meals, Weekly Meal Grid, Supplements, Workouts, Shopping List, Meal Prep Guide, Morning Ritual, Product Recommendations.</div>
+                <div class="step-tags">
+                  <span class="step-tag">Today's Meals</span>
+                  <span class="step-tag">Weekly Grid</span>
+                  <span class="step-tag">Supplements</span>
+                  <span class="step-tag">Workouts</span>
+                  <span class="step-tag">Shopping List</span>
+                  <span class="step-tag">Meal Prep</span>
+                </div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Meal Slots</div>
+                <div class="step-desc">Breakfast, lunch, dinner, and snacks with macro breakdown per meal. Meals show ingredients and preparation steps.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">3</div>
+              <div class="step-content">
+                <div class="step-title">Supplement Schedule</div>
+                <div class="step-desc">Morning, afternoon, and evening supplement list with dose and timing.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">4</div>
+              <div class="step-content">
+                <div class="step-title">Shopping List &amp; PDF Export</div>
+                <div class="step-desc">Aggregated ingredient list grouped by category. Export as PDF via react-pdf.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Check-in -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">✅</span>
+          <h3>Daily Check-in <code style="font-size:11px;color:var(--muted)">/app/checkin</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Check-in Form</div>
+                <div class="step-desc">Fill in today's metrics: body weight, water intake (L), calories consumed, protein (g), workout completed (yes/no), energy level (1–5), and optional notes.</div>
+                <div class="step-tags">
+                  <span class="step-tag">Weight</span>
+                  <span class="step-tag">Water</span>
+                  <span class="step-tag">Calories</span>
+                  <span class="step-tag">Protein</span>
+                  <span class="step-tag">Workout Done</span>
+                  <span class="step-tag">Energy Level</span>
+                </div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Submit Check-in</div>
+                <div class="step-desc">Saved to <code>checkins</code> table. One per day — re-submission updates today's record. Streak counter increments.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">3</div>
+              <div class="step-content">
+                <div class="step-title">Check-in Calendar</div>
+                <div class="step-desc">Visual calendar below the form showing all past check-in dates. Green dots on completed days.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Activities -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">⚡</span>
+          <h3>Activities <code style="font-size:11px;color:var(--muted)">/app/activities</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Daily Timeline</div>
+                <div class="step-desc">Today's scheduled supplements and exercises displayed in a chronological timeline (morning → afternoon → evening).</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Log Supplements</div>
+                <div class="step-desc">Tap to mark supplement as taken. Records timestamp in <code>supplement_logs</code>.</div>
+                <div class="step-tags"><span class="step-tag">Toggle Taken</span><span class="step-tag">Timestamp</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">3</div>
+              <div class="step-content">
+                <div class="step-title">Log Exercises</div>
+                <div class="step-desc">Mark exercise sets/reps as complete. Enter actual completed reps vs. planned. Notes field available.</div>
+                <div class="step-tags"><span class="step-tag">Sets / Reps</span><span class="step-tag">Completion</span><span class="step-tag">Notes</span></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">📈</span>
+          <h3>Progress <code style="font-size:11px;color:var(--muted)">/app/progress</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Progress Dashboard</div>
+                <div class="step-desc">Charts for weight over time, calorie trends, protein intake, energy level, and workout frequency. Time range selector (7d / 30d / 90d).</div>
+                <div class="step-tags">
+                  <span class="step-tag">Weight Chart</span>
+                  <span class="step-tag">Calories</span>
+                  <span class="step-tag">Protein</span>
+                  <span class="step-tag">Energy</span>
+                  <span class="step-tag">Workouts</span>
+                </div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Streaks &amp; Milestones</div>
+                <div class="step-desc">Current check-in streak, longest streak, total check-ins completed.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- My Program -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">🎯</span>
+          <h3>My Program <code style="font-size:11px;color:var(--muted)">/app/program</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Program Overview</div>
+                <div class="step-desc">Read-only view of the coach-assigned program. Shows program name, duration, days per week, and overall completion percentage.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Day-by-Day View</div>
+                <div class="step-desc">Browse through program days. Each day shows its label and all content items (workouts, meals, videos, text).</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">3</div>
+              <div class="step-content">
+                <div class="step-title">Complete Items</div>
+                <div class="step-desc">Check off individual items (workouts, meals viewed, videos watched). Saved to <code>program_item_completions</code>.</div>
+                <div class="step-tags"><span class="step-tag">Item Completion</span><span class="step-tag">Day Completion</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">4</div>
+              <div class="step-content">
+                <div class="step-title">Complete Day</div>
+                <div class="step-desc">When all items are done, mark the whole day complete. Progress bar updates. Saved to <code>program_day_completions</code>.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Food Logging -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">🍽️</span>
+          <h3>Food Logging <code style="font-size:11px;color:var(--muted)">/app/plan</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Open Food Log</div>
+                <div class="step-desc">Daily food log embedded in the plan page. Shows logged foods per meal slot with macro totals.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Search Foods</div>
+                <div class="step-desc">Search USDA FoodData Central or OpenFoodFacts databases. Results display food name, brand, and macros per 100g.</div>
+                <div class="step-tags"><span class="step-tag">USDA</span><span class="step-tag">OpenFoodFacts</span><span class="step-tag">Manual Entry</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">3</div>
+              <div class="step-content">
+                <div class="step-title">Barcode Scan</div>
+                <div class="step-desc">Enter barcode number to look up packaged food via OpenFoodFacts API.</div>
+                <div class="step-tags"><span class="step-tag">Barcode Input</span></div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">4</div>
+              <div class="step-content">
+                <div class="step-title">Log Entry</div>
+                <div class="step-desc">Set serving size, select meal slot (breakfast / lunch / dinner / snack), confirm macros. Saved to <code>food_log_entries</code>.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Client Profile -->
+      <div class="flow-card">
+        <div class="flow-card-header">
+          <span class="card-icon">👤</span>
+          <h3>Profile <code style="font-size:11px;color:var(--muted)">/app/profile</code></h3>
+        </div>
+        <div class="flow-card-body">
+          <ul class="step-list">
+            <li class="step-item">
+              <div class="step-num c-green">1</div>
+              <div class="step-content">
+                <div class="step-title">Update Personal Info</div>
+                <div class="step-desc">Name, age, height, weight, activity level, dietary restrictions. Updates <code>profiles</code> table.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">2</div>
+              <div class="step-content">
+                <div class="step-title">Goals</div>
+                <div class="step-desc">Primary goal (lose weight / build muscle / etc.) can be updated. Affects AI-generated meal plan on next generation.</div>
+              </div>
+            </li>
+            <li class="step-item">
+              <div class="step-num c-green">3</div>
+              <div class="step-content">
+                <div class="step-title">Sign Out</div>
+                <div class="step-desc">Clears session, returns to <code>/login</code>.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client diagram -->
+    <div class="full-flow" style="margin-top:24px">
+      <div class="full-flow-header">
+        <span style="font-size:20px">💪</span>
+        <div>
+          <h3 style="font-size:15px;font-weight:600">Client Flow Diagram</h3>
+          <p style="font-size:12px;color:var(--muted)">Detailed client journey and daily usage patterns</p>
+        </div>
+      </div>
+      <div class="full-flow-body">
+        <div class="mermaid">
+flowchart LR
+    Login([Login]) --> DB([Dashboard\n/app])
+    DB --> PLAN[My Plan\n/app/plan]
+    DB --> CI[Check-in\n/app/checkin]
+    DB --> ACT[Activities\n/app/activities]
+    DB --> PROG[Progress\n/app/progress]
+    DB --> PRG[My Program\n/app/program]
+    DB --> PRF[Profile\n/app/profile]
+
+    PLAN --> MEALS[Today's Meals]
+    PLAN --> WEEKLY[Weekly Grid]
+    PLAN --> SUPPS[Supplement Schedule]
+    PLAN --> SHOP[Shopping List]
+    PLAN --> FLOG[Food Log]
+    FLOG --> SEARCH[Search\nUSDA / OpenFoodFacts]
+    FLOG --> BARCODE[Barcode Scan]
+
+    CI --> FORM[Fill: weight, water,\ncalories, protein,\nworkout, energy]
+    FORM --> SUBMIT[Submit → streak++]
+
+    ACT --> SLOG[Log Supplements\nmark taken]
+    ACT --> ELOG[Log Exercises\nsets / reps done]
+
+    PROG --> CHARTS[Weight · Calories\nProtein · Energy]
+
+    PRG --> DAYS[Browse Days]
+    DAYS --> COMP[Complete Items\n& Days]
+
+    style DB fill:#1a2e1a,stroke:#4ade80,color:#e8e8f0
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── INVITE FLOW ──────────────────────────────── -->
+  <section class="section" id="invite">
+    <div class="section-header">
+      <div class="section-icon bg-purple" style="border:1px solid rgba(108,99,255,0.3)">📨</div>
+      <div>
+        <h2>Invite Flow</h2>
+        <p>How a coach brings a new client onto the platform.</p>
+      </div>
+    </div>
+
+    <div class="flow-card" style="max-width:680px">
+      <div class="flow-card-header">
+        <span class="card-icon">🔗</span>
+        <h3>Coach Invite → Client Registration</h3>
+      </div>
+      <div class="flow-card-body">
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num c-purple">1</div>
+            <div class="step-content">
+              <div class="step-title">Coach Sends Invite</div>
+              <div class="step-desc">From <code>/coach/clients</code>, coach enters client's email. System creates an invite record with a unique token and expiry date. Email is dispatched.</div>
+              <div class="step-tags"><span class="step-tag">Invite Token</span><span class="step-tag">Expiry</span><span class="step-tag">Email Sent</span></div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num c-purple">2</div>
+            <div class="step-content">
+              <div class="step-title">Client Clicks Invite Link</div>
+              <div class="step-desc">Link contains the token. Client lands on <code>/invite/accept?token=…</code>. System validates token is not expired and not already accepted.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num c-purple">3</div>
+            <div class="step-content">
+              <div class="step-title">Accept Invite <code style="font-size:11px;color:var(--muted)">/invite/accept</code></div>
+              <div class="step-desc">Client sees coach's brand name and a CTA to create their account. Token is stored in session.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num c-purple">4</div>
+            <div class="step-content">
+              <div class="step-title">Signup / Login</div>
+              <div class="step-desc">New client → <code>/signup</code> with invite context. Existing user → <code>/login</code>.</div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num c-purple">5</div>
+            <div class="step-content">
+              <div class="step-title">Complete Invite <code style="font-size:11px;color:var(--muted)">/invite/complete</code></div>
+              <div class="step-desc">System links client's user account to the coach's <code>coach_id</code>. Invite <code>accepted_at</code> is stamped. Client record created.</div>
+              <div class="step-tags"><span class="step-tag">Link to Coach</span><span class="step-tag">Client Record</span><span class="step-tag">Invite Closed</span></div>
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num c-purple">6</div>
+            <div class="step-content">
+              <div class="step-title">Redirect to Client Dashboard</div>
+              <div class="step-desc">Client arrives at <code>/app</code> with the coach's branding already visible in the header.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ROUTES ───────────────────────────────────── -->
+  <section class="section" id="routes">
+    <div class="section-header">
+      <div class="section-icon bg-orange" style="border:1px solid rgba(251,146,60,0.3)">🗂️</div>
+      <div>
+        <h2>All Routes Reference</h2>
+        <p>Complete list of every page in the application.</p>
+      </div>
+    </div>
+
+    <div class="full-flow">
+      <div class="full-flow-body" style="padding:0">
+        <table class="route-table">
+          <thead>
+            <tr>
+              <th>Route</th>
+              <th>Page</th>
+              <th>Role</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="route-badge">/</span></td>
+              <td>Landing</td>
+              <td><span class="role-pill c-purple">Public</span></td>
+              <td>Hero, features, pricing, onboarding form</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/login</span></td>
+              <td>Login</td>
+              <td><span class="role-pill c-purple">Public</span></td>
+              <td>Email + password login with role-based redirect</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/signup</span></td>
+              <td>Signup</td>
+              <td><span class="role-pill c-purple">Public</span></td>
+              <td>Create account; accepts onboarding context</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/invite/accept</span></td>
+              <td>Accept Invite</td>
+              <td><span class="role-pill c-purple">Public</span></td>
+              <td>Validate invite token, show coach brand, CTA to join</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/invite/complete</span></td>
+              <td>Complete Invite</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Link client account to coach after auth</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/app</span></td>
+              <td>Client Dashboard</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Overview: stats, quick links, coach branding</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/app/plan</span></td>
+              <td>My Plan</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Tabbed meal plan, supplements, food log, shopping list</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/app/program</span></td>
+              <td>My Program</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Coach-assigned program with day/item completion</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/app/activities</span></td>
+              <td>Activities</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Timeline for supplement and exercise logging</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/app/checkin</span></td>
+              <td>Daily Check-in</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Log weight, water, macros, workout, energy level</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/app/progress</span></td>
+              <td>Progress</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Charts for all tracked metrics over time + streaks</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/app/profile</span></td>
+              <td>Client Profile</td>
+              <td><span class="role-pill c-green">Client</span></td>
+              <td>Personal info, goals, dietary preferences, sign out</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/onboarding</span></td>
+              <td>Coach Onboarding</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>First-time brand setup (name, logo, subscription)</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/dashboard</span></td>
+              <td>Coach Dashboard</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>Overview: active clients, recent check-ins, plans</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/clients</span></td>
+              <td>Clients List</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>All clients, invite new clients by email</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/clients/[id]</span></td>
+              <td>Client Detail</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>Profile, check-ins, meal plan, programs, supplements</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/programs</span></td>
+              <td>Programs List</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>All programs with filters; create new</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/programs/new</span></td>
+              <td>New Program</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>Program metadata form (name, duration, difficulty)</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/programs/[id]</span></td>
+              <td>Edit Program</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>Week/day editor; add days and content items</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/library</span></td>
+              <td>Library</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>Reusable content items (workout, meal, video, text)</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/calendar</span></td>
+              <td>Calendar</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>Monthly view of all client check-in activity</td>
+            </tr>
+            <tr>
+              <td><span class="route-badge">/coach/profile</span></td>
+              <td>Coach Profile</td>
+              <td><span class="role-pill c-cyan">Coach</span></td>
+              <td>Brand settings, subscription tier, sign out</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#17171f',
+      primaryColor: '#1e1e29',
+      primaryTextColor: '#e8e8f0',
+      primaryBorderColor: '#2a2a3a',
+      lineColor: '#6c63ff',
+      secondaryColor: '#2a2a3a',
+      tertiaryColor: '#17171f',
+      edgeLabelBackground: '#1e1e29',
+      clusterBkg: '#1e1e29',
+      titleColor: '#e8e8f0',
+      nodeTextColor: '#e8e8f0',
+    },
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+    }
+  });
+</script>
+
+</body>
+</html>
