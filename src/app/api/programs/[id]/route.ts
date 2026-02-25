@@ -2,23 +2,31 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { apiError } from "@/lib/api-response";
 
-async function getCoachAndVerifyProgram(supabase: Awaited<ReturnType<typeof createClient>>, programId: string, userId: string) {
+type VerifyResult =
+  | { success: false; error: string; status: number }
+  | { success: true; coach: { id: string }; program: { id: string; coach_id: string } };
+
+async function getCoachAndVerifyProgram(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  programId: string,
+  userId: string
+): Promise<VerifyResult> {
   const { data: coach } = await supabase
     .from("coaches")
     .select("id")
     .eq("user_id", userId)
     .single();
-  if (!coach) return { error: "Coach not found", status: 404 };
+  if (!coach) return { success: false, error: "Coach not found", status: 404 };
 
   const { data: program } = await supabase
     .from("programs")
     .select("id, coach_id")
     .eq("id", programId)
     .single();
-  if (!program) return { error: "Program not found", status: 404 };
-  if (program.coach_id !== coach.id) return { error: "Forbidden", status: 403 };
+  if (!program) return { success: false, error: "Program not found", status: 404 };
+  if (program.coach_id !== coach.id) return { success: false, error: "Forbidden", status: 403 };
 
-  return { coach, program };
+  return { success: true, coach, program };
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -67,7 +75,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!user) return apiError(401, "Unauthorized", "UNAUTHORIZED");
 
   const check = await getCoachAndVerifyProgram(supabase, id, user.id);
-  if ("error" in check) return apiError(check.status, check.error);
+  if (!check.success) return apiError(check.status, check.error);
 
   const body = await req.json();
   const { name, description, tags, difficulty, days_per_week, duration_weeks, start_day, color } = body;
@@ -100,7 +108,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (!user) return apiError(401, "Unauthorized", "UNAUTHORIZED");
 
   const check = await getCoachAndVerifyProgram(supabase, id, user.id);
-  if ("error" in check) return apiError(check.status, check.error);
+  if (!check.success) return apiError(check.status, check.error);
 
   const forceDelete = req.nextUrl.searchParams.get("force") === "true";
   const { count: activeAssignmentCount, error: assignmentError } = await supabase

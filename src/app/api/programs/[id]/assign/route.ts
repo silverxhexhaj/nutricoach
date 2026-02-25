@@ -2,17 +2,21 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { apiError } from "@/lib/api-response";
 
+type VerifyResult =
+  | { success: false; error: string; status: number; code: string }
+  | { success: true; coach: { id: string } };
+
 async function getCoachAndProgram(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   programId: string
-) {
+): Promise<VerifyResult> {
   const { data: coach } = await supabase
     .from("coaches")
     .select("id")
     .eq("user_id", userId)
     .single();
-  if (!coach) return { error: "Coach not found", status: 404, code: "COACH_NOT_FOUND" };
+  if (!coach) return { success: false, error: "Coach not found", status: 404, code: "COACH_NOT_FOUND" };
 
   const { data: program } = await supabase
     .from("programs")
@@ -20,9 +24,9 @@ async function getCoachAndProgram(
     .eq("id", programId)
     .eq("coach_id", coach.id)
     .single();
-  if (!program) return { error: "Program not found", status: 404, code: "PROGRAM_NOT_FOUND" };
+  if (!program) return { success: false, error: "Program not found", status: 404, code: "PROGRAM_NOT_FOUND" };
 
-  return { coach };
+  return { success: true, coach };
 }
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -32,7 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!user) return apiError(401, "Unauthorized", "UNAUTHORIZED");
 
   const check = await getCoachAndProgram(supabase, user.id, programId);
-  if ("error" in check) return apiError(check.status, check.error, check.code);
+  if (!check.success) return apiError(check.status, check.error, check.code);
   const { coach } = check;
 
   const body = await req.json();
@@ -76,7 +80,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (!user) return apiError(401, "Unauthorized", "UNAUTHORIZED");
 
   const check = await getCoachAndProgram(supabase, user.id, programId);
-  if ("error" in check) return apiError(check.status, check.error, check.code);
+  if (!check.success) return apiError(check.status, check.error, check.code);
   const { coach } = check;
 
   const body = await req.json().catch(() => null);

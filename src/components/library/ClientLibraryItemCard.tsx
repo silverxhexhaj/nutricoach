@@ -182,9 +182,10 @@ export function ClientLibraryItemCard({ item, onDeleted }: ClientLibraryItemCard
             {(item.type === "recipe" || item.type === "meal") &&
               (Array.isArray(item.content?.ingredients) || Array.isArray(item.content?.foods)) && (
                 <ul className="list-disc pl-5 space-y-1">
-                  {(Array.isArray(item.content?.ingredients)
-                    ? item.content.ingredients
-                    : item.content?.foods ?? []
+                  {(
+                    (Array.isArray(item.content?.ingredients)
+                      ? item.content.ingredients
+                      : item.content?.foods ?? []) as unknown[]
                   )
                     .slice(0, 6)
                     .map((entry, idx) => (

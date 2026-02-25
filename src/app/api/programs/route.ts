@@ -22,10 +22,10 @@ export async function GET(req: NextRequest) {
   const parsedDifficulty = difficulty ? Number.parseInt(difficulty, 10) : null;
   const parsedDaysPerWeek = daysPerWeek ? Number.parseInt(daysPerWeek, 10) : null;
 
-  if (difficulty && (!Number.isInteger(parsedDifficulty) || parsedDifficulty < 1 || parsedDifficulty > 3)) {
+  if (parsedDifficulty !== null && (!Number.isInteger(parsedDifficulty) || parsedDifficulty < 1 || parsedDifficulty > 3)) {
     return apiError(400, "Invalid difficulty filter", "VALIDATION_ERROR");
   }
-  if (daysPerWeek && (!Number.isInteger(parsedDaysPerWeek) || parsedDaysPerWeek < 1 || parsedDaysPerWeek > 7)) {
+  if (parsedDaysPerWeek !== null && (!Number.isInteger(parsedDaysPerWeek) || parsedDaysPerWeek < 1 || parsedDaysPerWeek > 7)) {
     return apiError(400, "Invalid days_per_week filter", "VALIDATION_ERROR");
   }
 

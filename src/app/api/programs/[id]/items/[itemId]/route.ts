@@ -2,34 +2,37 @@ import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { apiError } from "@/lib/api-response";
 
+type VerifyResult =
+  | { success: false; error: string; status: number }
+  | { success: true; item: { id: string; program_day_id: string } };
+
 async function verifyItemOwnership(
   supabase: Awaited<ReturnType<typeof createClient>>,
   programId: string,
   itemId: string,
   userId: string
-) {
+): Promise<VerifyResult> {
   const { data: coach } = await supabase
     .from("coaches")
     .select("id")
     .eq("user_id", userId)
     .single();
-  if (!coach) return { error: "Coach not found", status: 404 };
+  if (!coach) return { success: false, error: "Coach not found", status: 404 };
 
   const { data: item } = await supabase
     .from("program_items")
     .select("id, program_day_id")
     .eq("id", itemId)
     .single();
-  if (!item) return { error: "Item not found", status: 404 };
+  if (!item) return { success: false, error: "Item not found", status: 404 };
 
-  // Verify the day belongs to the program, and the program belongs to the coach
   const { data: day } = await supabase
     .from("program_days")
     .select("id, program_id")
     .eq("id", item.program_day_id)
     .eq("program_id", programId)
     .single();
-  if (!day) return { error: "Item not found", status: 404 };
+  if (!day) return { success: false, error: "Item not found", status: 404 };
 
   const { data: program } = await supabase
     .from("programs")
@@ -37,9 +40,9 @@ async function verifyItemOwnership(
     .eq("id", programId)
     .eq("coach_id", coach.id)
     .single();
-  if (!program) return { error: "Forbidden", status: 403 };
+  if (!program) return { success: false, error: "Forbidden", status: 403 };
 
-  return { item };
+  return { success: true, item };
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string; itemId: string }> }) {
@@ -49,7 +52,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!user) return apiError(401, "Unauthorized", "UNAUTHORIZED");
 
   const check = await verifyItemOwnership(supabase, programId, itemId, user.id);
-  if ("error" in check) return apiError(check.status, check.error);
+  if (!check.success) return apiError(check.status, check.error);
 
   const body = await req.json();
   const { type, title, content, sort_order } = body;
@@ -78,7 +81,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (!user) return apiError(401, "Unauthorized", "UNAUTHORIZED");
 
   const check = await verifyItemOwnership(supabase, programId, itemId, user.id);
-  if ("error" in check) return apiError(check.status, check.error);
+  if (!check.success) return apiError(check.status, check.error);
 
   const { error } = await supabase.from("program_items").delete().eq("id", itemId);
   if (error) return apiError(500, "Failed to delete program item", "PROGRAM_ITEM_DELETE_FAILED");
